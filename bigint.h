@@ -4,7 +4,7 @@
 #include <string>
 
 
-class BigInt{
+class BigInteger{
 private:
   string number;
   bool sign;
