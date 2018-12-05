@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <ssrtrem>
-
+#include <sstream>
+#include <cctype>
+#include <cstdlib>
 #include "bigint.h"
+
 using namespace std;
 
 BigInteger::BigInteger()
@@ -12,24 +14,6 @@ BigInteger::BigInteger()
 }
 
 BigInteger::BigInteger(string s){
-  if(isdigit(s[0])){
-      setNumber(s);
-      sign = false;
-  }else{
-    setNumber(s.substr(1));
-    sign = ( s[0] == '-');
-  }
-}
-BigInteger::BigInteger(string s, bool si){
-  setNumber(s);
-  setSign(si);
-}
-BigInteger::BigInteger(int n){
-  sstringstream ss;
-  string s;
-  ss << n;
-  ss >> s;
-
   if(isdigit(s[0])){
       setNumber(s);
       sign = false;
@@ -47,51 +31,40 @@ void BigInteger::setNumber(string s){
 const string& BigInteger::getNumber(){
   return number;
 }
-
-void BigInteger::setSign(bool s){
-  sign = s;
+BigInteger BigInteger:: operator+(BigInteger b){
+  return BigInteger(add((*this).getNumber(), b.getNumber()));
 }
 
-const bool& BigInteger::getSign(){
-  return sign;
-}
+string BigInteger::add(string a, string b){
+  string add = (a.length() > b.length() ? a : b);
+  char carry = '0';
+  int difLn = abs((int) (a.size() - b.size()));
 
-BigInteger BigInteger::absolute(){
-  return BigInteger(getNumber);
-}
+  if(a.size() > b.size())
+		b.insert(0, difLn, '0'); // put zeros from left
 
-void BigInteger::operator = (BigInteger b){
-  setNumber(b.getNumber());
-  setSign(b.getSign());
-}
+	else// if(number1.size() < number2.size())
+		a.insert(0, difLn, '0');
 
-bool BigInteger::operator == (BigInteger b){
-  return equals((*this), b);
-}
+	for(int i=a.size()-1; i>=0; --i)
+	{
+		add[i] = ((carry-'0')+(a[i]-'0')+(b[i]-'0')) + '0';
 
-bool BigInteger::operator != (BigInteger b){
-  return ! equals((*this), b);
+		if(i != 0)
+		{
+			if(add[i] > '9')
+			{
+				add[i] -= 10;
+				carry = '1';
+			}
+			else
+				carry = '0';
+		}
+	}
+	if(add[0] > '9')
+	{
+		add[0]-= 10;
+		add.insert(0,1,'1');
+	}
+	return add;
 }
-
-bool BigInteger::operator > (BigInteger b){
-  return greater((*this), b);
-}
-bool BigInteger::operator < (BigInteger b){
-  return less((*this), b);
-}
-bool BigInteger::operator >= (BigInteger b){
-  return greater((*this), b) or equals((*this), b);
-}
-bool BigInteger::operator <= (BigInteger b){
-
-}
-
-
-bool BigInteger::equals(BigInteger a, BigInteger b){
-  return a.getNumber() == b.getNumber()
-    and a.getSign() == b.getSign();
-}
-bool BigInteger::less(BigInteger n1, BigInteger n2){
-  
-}
-bool greater(BigInteger n1, BigInteger n2);
