@@ -4,12 +4,13 @@
 #include <sstream>
 #include <cctype>
 #include <cstdlib>
+#include <vector>
+#include <iomanip>
 #include "bigint.h"
-
 using namespace std;
 
 BigInteger::BigInteger()
-: number("0"), sign(false){
+:sign(false){
 
 }
 
@@ -25,46 +26,58 @@ BigInteger::BigInteger(string s){
 
 
 void BigInteger::setNumber(string s){
-  number = s;
+  s.erase(0, min(s.find_first_not_of('0'), s.size()-1));
+  int flzr = ((s.size()/sz+1)*sz-s.size())%sz;
+  s.insert(0, flzr, '0');
+  for(int i = s.size()-sz; i >= 0; i-=sz){
+    numbers.push_back(std::stoi(s.substr(i, sz)));
+  }
 }
 
-const string& BigInteger::getNumber(){
-  return number;
+string BigInteger::getNumber(){
+  return vtostring(numbers);
 }
 BigInteger BigInteger:: operator+(BigInteger b){
-  return BigInteger(add((*this).getNumber(), b.getNumber()));
+  return BigInteger(add((*this), b));
 }
 
-string BigInteger::add(string a, string b){
-  string add = (a.length() > b.length() ? a : b);
-  char carry = '0';
-  int difLn = abs((int) (a.size() - b.size()));
+string BigInteger::add(BigInteger b1, BigInteger b2){
+  std::vector<int> a = b1.numbers;
+  std::vector<int> b = b2.numbers;
+  if(a.size() < b.size())a.swap(b);
+  std::vector<int> out;
+  int carry = 0;
+  int w;
+  for (int i=0; i< a.size(); ++i) {
+    w = (i<b.size()?a[i]+b[i]+carry:a[i]+carry);
+    carry = 0;
+    if(w>base){
+      w%=base;
+      carry = 1;
+    }
+    out.push_back(w);
+  }
+  if(carry){
+    out.push_back(1);
+  }
+	return vtostring(out);
+}
 
-  if(a.size() > b.size())
-		b.insert(0, difLn, '0'); // put zeros from left
-
-	else// if(number1.size() < number2.size())
-		a.insert(0, difLn, '0');
-
-	for(int i=a.size()-1; i>=0; --i)
-	{
-		add[i] = ((carry-'0')+(a[i]-'0')+(b[i]-'0')) + '0';
-
-		if(i != 0)
-		{
-			if(add[i] > '9')
-			{
-				add[i] -= 10;
-				carry = '1';
-			}
-			else
-				carry = '0';
-		}
-	}
-	if(add[0] > '9')
-	{
-		add[0]-= 10;
-		add.insert(0,1,'1');
-	}
-	return add;
+string BigInteger::vtostring(std::vector<int> v){
+  stringstream ss;
+  ss << v[v.size()-1];
+  for(int i = v.size()-2;i >= 0;i--){
+   ss << setfill('0') << setw(sz) << v[i];
+  }
+  return ss.str();
+}
+istream &operator>>( istream  &input, BigInteger &B){
+  string s;
+  input >> s;
+  B.setNumber(s);
+  return input;
+}
+ostream &operator<<( ostream &out, BigInteger &D){
+  out << D.getNumber();
+  return out;
 }
