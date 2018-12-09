@@ -10,7 +10,7 @@
 using namespace std;
 
 BigInteger::BigInteger()
-:sign(false){
+:sign(false), numbers(0){
 
 }
 
@@ -38,9 +38,69 @@ string BigInteger::getNumber(){
   return vtostring(numbers);
 }
 BigInteger BigInteger:: operator+(BigInteger b){
-  return BigInteger(add((*this), b));
-}
+  BigInteger addition;
+	if( getSign() == b.getSign() ) // both +ve or -ve
+	{
+		addition.setNumber( add(getNumber(), b.getNumber() ) );
+		addition.setSign( getSign() );
+	}
+	else // sign different
+	{
+		if( absolute() > b.absolute() )
+		{
+			addition.setNumber( subtract(getNumber(), b.getNumber() ) );
+			addition.setSign( getSign() );
+		}
+		else
+		{
+			addition.setNumber( subtract(b.getNumber(), getNumber() ) );
+			addition.setSign( b.getSign() );
+		}
+	}
+	if(addition.getNumber() == "0") // avoid (-0) problem
+		addition.setSign(false);
 
+	return addition;
+}
+BigInteger BigInteger:: operator-(BigInteger b){
+  b.setSign( ! b.getSign() ); // x - y = x + (-y)
+	return (*this) + b;
+}
+bool BigInteger:: operator <(BigInteger b){
+  return less((*this), b);
+}
+bool BigInteger:: operator >(BigInteger b){
+  return !less((*this), b) and !equal((*this), b);
+}
+// bool operator <=(BigInteger b);
+// bool operator >=(BigInteger b);
+bool BigInteger::less(BigInteger a, BigInteger b){
+  int s1 = a.getNumber().size();
+  int s2 = b.getNumber().size();
+  bool b1 = a.getSign();
+  bool b2 = b.getSign();
+
+  if(b1 and !b2) //If (-b1) and (b2)
+    return true;
+
+  if(!b1 and b2)//If (b1) and (-b2)
+    return false;
+
+  if(!b1){
+    if(s1<s2) return true;
+    if(s1>s2) return false;
+    return a.getNumber() < b.getNumber();
+  }else{
+    if(s1>s2) return true;
+    if(s1<s2) return false;
+    return a.getNumber().compare( b.getNumber() ) > 0;
+
+  }
+}
+bool BigInteger::equal(BigInteger a, BigInteger b){
+  return a.getNumber() == b.getNumber()
+   and  a.getSign() == a.getSign();
+}
 string BigInteger::add(BigInteger b1, BigInteger b2){
   std::vector<int> a = b1.numbers;
   std::vector<int> b = b2.numbers;
@@ -62,7 +122,18 @@ string BigInteger::add(BigInteger b1, BigInteger b2){
   }
 	return vtostring(out);
 }
-
+string BigInteger::subtract(BigInteger b1, BigInteger b2){
+  std::vector<int> a = b1.numbers;
+  std::vector<int> b = b2.numbers;
+  int carry = 0;
+  for(int i = 0; i < b.size() || carry; i++){
+      a[i]-= carry + (i < b.size() ? b[i]: 0);
+      carry = a[i] < 0;
+      if(carry) a[i] += base;
+  }
+  while(a.size() > 1 && a.back() == 0) a.pop_back();
+  return vtostring(a);
+}
 string BigInteger::vtostring(std::vector<int> v){
   stringstream ss;
   ss << v[v.size()-1];
@@ -71,13 +142,22 @@ string BigInteger::vtostring(std::vector<int> v){
   }
   return ss.str();
 }
+BigInteger BigInteger::absolute(){
+	return BigInteger( getNumber() ); // +ve by default
+}
+void BigInteger::setSign(bool s){
+  sign = s;
+}
+const bool BigInteger::getSign(){
+  return sign;
+}
 istream &operator>>( istream  &input, BigInteger &B){
   string s;
   input >> s;
-  B.setNumber(s);
+  B = BigInteger(s);
   return input;
 }
 ostream &operator<<( ostream &out, BigInteger &D){
-  out << D.getNumber();
+  out << (D.getSign()?"-":"") <<D.getNumber();
   return out;
 }

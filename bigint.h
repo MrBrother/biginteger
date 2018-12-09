@@ -11,6 +11,7 @@ using namespace std;
 class BigInteger{
 private:
   std::vector<int> numbers;
+
   bool sign;
 
 public:
@@ -19,13 +20,24 @@ public:
 
   void setNumber(string s);
   string getNumber();
-
+  void setSign(bool s);
+  const bool getSign();
   BigInteger operator +(BigInteger b);
+  BigInteger operator -(BigInteger b);
+  bool operator <(BigInteger b);
+  bool operator >(BigInteger b);
+  // bool operator <=(BigInteger b);
+  // bool operator >=(BigInteger b);
   friend istream &operator>>( istream  &input, BigInteger &B);
   friend ostream &operator<<( ostream &output, BigInteger &D);
 private:
 	string add(BigInteger a, BigInteger b);
+  string subtract(BigInteger b1, BigInteger b2);
+  bool less(BigInteger a, BigInteger b);
+  bool equal(BigInteger a, BigInteger b);
+  BigInteger absolute();
   string vtostring(std::vector<int> v);
+
 
 };
 
