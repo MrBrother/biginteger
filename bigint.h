@@ -17,6 +17,7 @@ private:
 public:
   BigInteger();
   BigInteger(string s);
+  BigInteger(int a);
 
   void setNumber(string s);
   string getNumber();
@@ -24,15 +25,22 @@ public:
   const bool getSign();
   BigInteger operator +(BigInteger b);
   BigInteger operator -(BigInteger b);
+  BigInteger operator *(BigInteger b);
+  BigInteger& operator ++();
+  BigInteger operator ++(int);
+
+
   bool operator <(BigInteger b);
   bool operator >(BigInteger b);
-  // bool operator <=(BigInteger b);
-  // bool operator >=(BigInteger b);
+  bool operator <=(BigInteger b);
+  bool operator >=(BigInteger b);
+  //BigInteger& operator ++();
   friend istream &operator>>( istream  &input, BigInteger &B);
   friend ostream &operator<<( ostream &output, BigInteger &D);
 private:
 	string add(BigInteger a, BigInteger b);
   string subtract(BigInteger b1, BigInteger b2);
+  string multiply(BigInteger b1, BigInteger b2);
   bool less(BigInteger a, BigInteger b);
   bool equal(BigInteger a, BigInteger b);
   BigInteger absolute();

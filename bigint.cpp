@@ -23,7 +23,19 @@ BigInteger::BigInteger(string s){
     sign = ( s[0] == '-');
   }
 }
-
+BigInteger::BigInteger(int a){
+  stringstream ss;
+  string s;
+  ss << a;
+  ss >> s;
+  if(isdigit(s[0])){
+      setNumber(s);
+      sign = false;
+  }else{
+    setNumber(s.substr(1));
+    sign = ( s[0] == '-');
+  }
+}
 
 void BigInteger::setNumber(string s){
   s.erase(0, min(s.find_first_not_of('0'), s.size()-1));
@@ -66,14 +78,35 @@ BigInteger BigInteger:: operator-(BigInteger b){
   b.setSign( ! b.getSign() ); // x - y = x + (-y)
 	return (*this) + b;
 }
+BigInteger BigInteger::operator *(BigInteger b){
+  BigInteger ml;
+  ml.setNumber(multiply((*this),b));
+  ml.setSign(getSign() != b.getSign());
+  if(ml.getNumber() == "0")
+    ml.setSign(false);
+  return ml;
+}
+BigInteger& BigInteger:: operator++(){
+  (*this) = (*this) + 1;
+  return (*this);
+}
+BigInteger BigInteger:: operator++(int){
+  BigInteger before = (*this);
+	(*this) = (*this) + 1;
+	return before;
+}
 bool BigInteger:: operator <(BigInteger b){
   return less((*this), b);
 }
 bool BigInteger:: operator >(BigInteger b){
   return !less((*this), b) and !equal((*this), b);
 }
-// bool operator <=(BigInteger b);
-// bool operator >=(BigInteger b);
+bool BigInteger:: operator <=(BigInteger b){
+  return less((*this), b) or equal((*this), b);
+}
+bool BigInteger:: operator >=(BigInteger b){
+  return !less((*this), b) or equal((*this), b);
+}
 bool BigInteger::less(BigInteger a, BigInteger b){
   int s1 = a.getNumber().size();
   int s2 = b.getNumber().size();
@@ -133,6 +166,11 @@ string BigInteger::subtract(BigInteger b1, BigInteger b2){
   }
   while(a.size() > 1 && a.back() == 0) a.pop_back();
   return vtostring(a);
+}
+string BigInteger::multiply(BigInteger b1, BigInteger b2){
+  string a = b1.getNumber();
+  string b = b2.getNumber();
+  if(a.length()<b.length())a.swap(b);
 }
 string BigInteger::vtostring(std::vector<int> v){
   stringstream ss;
