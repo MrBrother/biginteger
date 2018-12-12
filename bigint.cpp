@@ -168,9 +168,22 @@ string BigInteger::subtract(BigInteger b1, BigInteger b2){
   return vtostring(a);
 }
 string BigInteger::multiply(BigInteger b1, BigInteger b2){
-  string a = b1.getNumber();
-  string b = b2.getNumber();
-  if(a.length()<b.length())a.swap(b);
+  vector<int> a = b1.numbers;
+  vector<int> b = b2.numbers;
+  vector<long long> c(a.size()+b.size());
+  if(a.size()<b.size())a.swap(b);
+  long long carry = 0;
+  for (size_t i = 0; i < a.size(); i++) {
+      for (int j = 0; j < (int)b.size() || carry; j++) {
+        long long cur = c[i+j] + a[i] * (j < (int)b.size() ? b[j]:0);
+        c[i+j] = int(cur%base);
+        carry = int(cur/base);
+      }
+  }
+  while (c.size() > 1 && c.back() = 0) {
+    c.pop_back();
+  }
+
 }
 string BigInteger::vtostring(std::vector<int> v){
   stringstream ss;
