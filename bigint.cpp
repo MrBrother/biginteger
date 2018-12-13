@@ -180,12 +180,20 @@ string BigInteger::multiply(BigInteger b1, BigInteger b2){
         carry = int(cur/base);
       }
   }
-  while (c.size() > 1 && c.back() = 0) {
+  while (c.size() > 1 && c.back() == 0) {
     c.pop_back();
   }
-
+  return vtostring(c);
 }
 string BigInteger::vtostring(std::vector<int> v){
+  stringstream ss;
+  ss << v[v.size()-1];
+  for(int i = v.size()-2;i >= 0;i--){
+   ss << setfill('0') << setw(sz) << v[i];
+  }
+  return ss.str();
+}
+string BigInteger::vtostring(std::vector<long long> v){
   stringstream ss;
   ss << v[v.size()-1];
   for(int i = v.size()-2;i >= 0;i--){

@@ -45,6 +45,7 @@ private:
   bool equal(BigInteger a, BigInteger b);
   BigInteger absolute();
   string vtostring(std::vector<int> v);
+  string vtostring(std::vector<long long> v);
 
 
 };
