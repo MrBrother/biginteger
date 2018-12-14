@@ -26,6 +26,7 @@ public:
   BigInteger operator +(BigInteger b);
   BigInteger operator -(BigInteger b);
   BigInteger operator *(BigInteger b);
+  BigInteger operator/(BigInteger b);
   BigInteger& operator ++();
   BigInteger operator ++(int);
 
@@ -41,6 +42,7 @@ private:
 	string add(BigInteger a, BigInteger b);
   string subtract(BigInteger b1, BigInteger b2);
   string multiply(BigInteger b1, BigInteger b2);
+  string divide(BigInteger b1, BigInteger b2);
   bool less(BigInteger a, BigInteger b);
   bool equal(BigInteger a, BigInteger b);
   BigInteger absolute();

@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <vector>
 #include <iomanip>
+#include <algorithm>
 #include "bigint.h"
 using namespace std;
 
@@ -85,6 +86,9 @@ BigInteger BigInteger::operator *(BigInteger b){
   if(ml.getNumber() == "0")
     ml.setSign(false);
   return ml;
+}
+BigInteger BigInteger:: operator/(BigInteger b){
+  return BigInteger(divide((*this), b));
 }
 BigInteger& BigInteger:: operator++(){
   (*this) = (*this) + 1;
@@ -184,6 +188,46 @@ string BigInteger::multiply(BigInteger b1, BigInteger b2){
     c.pop_back();
   }
   return vtostring(c);
+}
+string BigInteger::divide(BigInteger b1, BigInteger b2){
+  if(b1<b2)
+    return string("0");
+  vector<int> a = b1.numbers;
+  vector<int> b = b2.numbers;
+  vector<int> tmp, res;
+  int sz = a.size() - 1;
+  while(tmp.size() < b.size()){
+    tmp.push_back(a[sz--]);
+  }
+  reverse(tmp.begin(), tmp.end());
+  if(BigInteger(vtostring(tmp)) < b2){
+    reverse(tmp.begin(), tmp.end());
+    tmp.push_back(a[sz--]);
+    reverse(tmp.begin(), tmp.end());
+  }
+
+  while(true){
+    int l=0,r=base;
+    while(r-l>1){
+      int m = (r+l) >> 1;
+      if(b1 < b2 * m){
+        r = m;
+      }else{
+        l = m;
+      }
+    }
+    res.push_back(l);
+    tmp = (BigInteger(vtostring(tmp)) - b2 * l).numbers;
+    if(sz<0){
+      break;
+    }
+
+  }
+
+  reverse(res.begin(), res.end());
+    return vtostring(res);
+
+
 }
 string BigInteger::vtostring(std::vector<int> v){
   stringstream ss;
